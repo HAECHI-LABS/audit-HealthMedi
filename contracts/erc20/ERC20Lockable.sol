@@ -52,9 +52,10 @@ abstract contract ERC20Lockable is ERC20, Ownable {
     }
 
     function unlockAll(address from) external returns (bool success) {
-        for(uint256 i = 0; i < _locks[from].length; i++){
-            if(_locks[from][i].due < block.timestamp){
-                if(_unlock(from, i)){
+        for(uint256 i = 0; i < _locks[from].length;){
+            i++;
+            if(_locks[from][i - 1].due < block.timestamp){
+                if(_unlock(from, i - 1)){
                     i--;
                 }
             }
@@ -67,10 +68,42 @@ abstract contract ERC20Lockable is ERC20, Ownable {
     onlyOwner
     returns (bool success)
     {
-        for(uint256 i = 0; i < _locks[from].length; i++){
-            if(_unlock(from, i)){
+        for(uint256 i = 0; i < _locks[from].length;){
+            i++;
+            if(_unlock(from, i - 1)){
                 i--;
             }
+        }
+        success = true;
+    }
+
+    function lockup(address from, uint256 amount, uint256 due)
+    external
+    onlyOwner
+    returns (bool success)
+    {
+        require(
+            from != address(0),
+            "ERC20Lockable/lockup : Cannot lock zero address"
+        );
+        _lock(from, amount, due);
+        success = true;
+    }
+
+    function multipleLockup(address[] calldata from, uint256[] calldata amount, uint256[] calldata due)
+    external
+    onlyOwner
+    returns (bool success)
+    {
+        require(from.length == amount.length);
+        require(from.length == due.length);
+
+        for(uint256 i = 0; i < from.length; i++) {
+            require(
+                from[i] != address(0),
+                "ERC20Lockable/multipleLockup : Cannot lock zero address"
+            );
+            _lock(from[i], amount[i], due[i]);
         }
         success = true;
     }
