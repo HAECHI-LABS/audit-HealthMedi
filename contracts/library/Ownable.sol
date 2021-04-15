@@ -4,7 +4,6 @@ pragma solidity 0.8.0;
 
 abstract contract Ownable {
     address internal _owner;
-    bool internal _canTransferOwnership = true;
 
     event OwnershipTransferred(
         address indexed currentOwner,
@@ -24,14 +23,6 @@ abstract contract Ownable {
         _;
     }
 
-    modifier canTransferOwnership() {
-        require(
-            _canTransferOwnership,
-            "Ownable : Ownership Transfer blocked"
-        );
-        _;
-    }
-
     function owner() external view returns (address ownerAddress) {
         ownerAddress = _owner;
     }
@@ -39,7 +30,6 @@ abstract contract Ownable {
     function transferOwnership(address newOwner)
         public
         onlyOwner
-        canTransferOwnership
         returns (bool success)
     {
         require(newOwner != address(0), "Ownable/transferOwnership : cannot transfer ownership to zero address");
@@ -49,13 +39,8 @@ abstract contract Ownable {
     function renounceOwnership()
         external
         onlyOwner
-        canTransferOwnership
         returns (bool success) {
         success = _transferOwnership(address(0));
-    }
-
-    function finishTransferOwnership() external onlyOwner canTransferOwnership {
-        _canTransferOwnership = false;
     }
 
     function _transferOwnership(address newOwner) internal returns (bool success) {

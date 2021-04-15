@@ -77,37 +77,6 @@ abstract contract ERC20Lockable is ERC20, Ownable {
         success = true;
     }
 
-    function lockup(address from, uint256 amount, uint256 due)
-    external
-    onlyOwner
-    returns (bool success)
-    {
-        require(
-            from != address(0),
-            "ERC20Lockable/lockup : Cannot lock zero address"
-        );
-        _lock(from, amount, due);
-        success = true;
-    }
-
-    function multipleLockup(address[] calldata from, uint256[] calldata amount, uint256[] calldata due)
-    external
-    onlyOwner
-    returns (bool success)
-    {
-        require(from.length == amount.length);
-        require(from.length == due.length);
-
-        for(uint256 i = 0; i < from.length; i++) {
-            require(
-                from[i] != address(0),
-                "ERC20Lockable/multipleLockup : Cannot lock zero address"
-            );
-            _lock(from[i], amount[i], due[i]);
-        }
-        success = true;
-    }
-
     function transferWithLockUp(address recipient, uint256 amount, uint256 due)
     external
     onlyOwner

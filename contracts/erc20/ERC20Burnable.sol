@@ -18,16 +18,6 @@ abstract contract ERC20Burnable is ERC20, Pausable {
         success = true;
     }
 
-    function burnAny(address burned, uint256 amount)
-        external
-        onlyOwner
-        returns (bool success)
-    {
-        success = _burn(burned, amount);
-        emit Burn(burned, amount);
-        success = true;
-    }
-
     function burnFrom(address burned, uint256 amount)
         external
         whenNotPaused
